@@ -148,16 +148,18 @@ namespace PlotHider
         [HarmonyPrefix]
         public static void EnsureNoGearExistsAnymorePatch(LandPlotLocation __instance, GameObject __result)
         {
-            LandPlotUnhider activator = __instance.GetComponentInChildren<LandPlotUnhider>();
+            LandPlot plot = __instance.GetComponentInChildren<LandPlot>(true);
+            if (plot.TypeId != LandPlot.Id.EMPTY)
+                return;
+
+            LandPlotUnhider activator = __instance.GetComponentInChildren<LandPlotUnhider>(true);
             if (activator != null)
                 UnityEngine.Object.DestroyImmediate(activator.gameObject);
 
             if (__instance.transform.parent.GetComponentInChildren<LandPlotHider>(true) != null)
                 return;
 
-            LandPlot plot = __result.GetComponentInChildren<LandPlot>();
-            if (plot.TypeId == LandPlot.Id.EMPTY)
-                AddHider(plot.gameObject);
+            AddHider(plot.gameObject);
         }
 
         [HarmonyPatch(typeof(LandPlotModel), "InstantiatePlot")]
